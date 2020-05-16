@@ -1,0 +1,12 @@
+<div class="format-actions">
+  <button class="format-action" type="button" (click)="setBold()"><b>B</b></button>
+  <button class="format-action" type="button" (click)="setItalic()"><i>I</i></button>
+  <button class="format-action" type="button" (click)="setUnderlined()"><u>U</u></button>
+  <select 
+    name="synonym" 
+    id="synonym"
+    (change)="selectSynonym($event)">
+    <option value="">Synonym</option>
+    <option *ngFor="let synonym of synonyms | async" [value]="synonym">{{synonym}}</option>
+  </select>
+</div>

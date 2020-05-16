@@ -1,0 +1,31 @@
+:host {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+}
+
+.file {
+  width: 600px;
+  flex-grow: 1;
+  background-color: #fff;
+  border: 1px solid #e4dede;
+  padding: 20px;
+
+  .word {
+    cursor: pointer;
+    &.bold {
+      font-weight: bold;
+    }
+    &.underlined {
+      text-decoration: underline;
+    }
+    &.italic {
+      font-style: italic;
+    }
+    &.selected {
+      background-color: lightyellow;
+    }
+  }
+}

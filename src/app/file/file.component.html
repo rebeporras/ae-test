@@ -1,0 +1,9 @@
+<div class="file">
+  <span 
+    class="word" 
+    *ngFor="let word of text"
+    [ngClass]="getClasses(word)"
+    (click)="selectWord(word)">
+    {{ word.word }}
+  </span>
+</div>
