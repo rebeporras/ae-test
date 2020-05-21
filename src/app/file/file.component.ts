@@ -1,20 +1,18 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TextService, WordState } from '../text-service/text.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-file',
   templateUrl: './file.component.html',
-  styleUrls: ['./file.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Default
+  styleUrls: ['./file.component.scss']
 })
 export class FileComponent implements OnInit, OnDestroy {
-  subscriptions: Subscription;
-  text: Array<WordState>;
+  private subscriptions: Subscription;
+  public text: Array<WordState>;
 
   constructor(
-    private textService: TextService,
-    private cd: ChangeDetectorRef
+    private textService: TextService
   ) { }
 
   ngOnInit() {
@@ -28,39 +26,33 @@ export class FileComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  initTextState() {
+  private initTextState(): void {
     const textSubscription = this.textService.getMockText().subscribe( 
-      (text: Array<WordState>) => {
-        this.textService.setTextState(text);
-        this.text = text
-        this.cd.markForCheck();
-      }
+      (text: Array<WordState>) => this.text = text
     );
 
     this.subscriptions.add(textSubscription);
   }
 
-  getClasses({isBold, isUnderlined, isItalic, isSelected}) {
+  public getClasses({bold, underlined, italic, isSelected}): any {
     return {
-      'bold': isBold,
-      'underlined': isUnderlined,
-      'italic': isItalic,
-      'selected': isSelected
+      bold,
+      underlined,
+      italic,
+      selected: isSelected
     };
   }
 
-  selectWord(word: WordState) {
+  public selectWord(word: WordState): void {
     if (!word.isSelected) {
       this.deselectText();
-      this.textService.getSynonym(word.word).subscribe(
-        (synonyms: Array<string>) => this.textService.setSynonyms(synonyms)
-      );
     }
     word.isSelected = !word.isSelected;
-    this.textService.setTextState(this.text);
+    this.textService.setSelectedWord(word.isSelected ? word : null);
+    this.textService.setSynonyms(word.isSelected ? word.word : null);
   }
 
-  private deselectText() {
+  private deselectText(): void {
     this.text.map(word => word.isSelected = false);
   }
 }

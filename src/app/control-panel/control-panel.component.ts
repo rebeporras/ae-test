@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { TextService, WordState } from '../text-service/text.service';
 import { Subscription, Observable } from 'rxjs';
 
@@ -9,52 +9,47 @@ import { Subscription, Observable } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ControlPanelComponent implements OnInit, OnDestroy {
-  subscriptions: Subscription;
-  selectedWord: WordState;
-  synonyms: Observable<string[]>;
+  private subscriptions: Subscription;
+  private selectedWord: WordState;
+  public synonyms: Observable<string[]>;
+  public color: string;
   
   constructor(
-    private textService: TextService,
-    private cd: ChangeDetectorRef
+    private textService: TextService
   ) { }
 
   ngOnInit() {
     this.subscriptions = new Subscription();
     this.synonyms = this.textService.synonyms;
+    this.color = '#000000';
 
-    const textSubscription = this.textService.text.subscribe(
-      (text: Array<WordState>) => {
-        this.selectedWord = text ? text.find(word => word.isSelected) : null;
-        this.cd.markForCheck();
-      }
+    const selectedWordSubscription = this.textService.selectedWord.subscribe(
+      (word: WordState) => this.selectedWord = word
     );
 
-    this.subscriptions.add(textSubscription);
+    this.subscriptions.add(selectedWordSubscription);
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 
-  setBold() {
+  public formatWord(action: string): void {
     if (this.selectedWord) {
-      this.selectedWord.isBold = !this.selectedWord.isBold;
+      this.selectedWord[action] = !this.selectedWord[action];
     }
   }
 
-  setItalic() {
+  public selectSynonym({target}): void {
     if (this.selectedWord) {
-      this.selectedWord.isItalic = !this.selectedWord.isItalic;
+      this.selectedWord.word = target.value;
     }
   }
 
-  setUnderlined() {
+  public updateColor({color}): void {
+    this.color = color;
     if (this.selectedWord) {
-      this.selectedWord.isUnderlined = !this.selectedWord.isUnderlined;
+      this.selectedWord['color'] = color;
     }
-  }
-
-  selectSynonym({target}) {
-    this.selectedWord.word = target.value;
   }
 }

@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { TextService } from './text-service/text.service';
 import { FooterComponent } from './footer/footer.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ColorPickerModule
   ],
   providers: [
     TextService

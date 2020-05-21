@@ -6,12 +6,12 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class TextService {
-  private text$ = new BehaviorSubject(null);
-  private synonyms$ = new BehaviorSubject(null);
+  private selectedWord$: BehaviorSubject<WordState> = new BehaviorSubject(null);
+  private synonyms$: BehaviorSubject<string[]> = new BehaviorSubject(null);
 
   constructor( private http: HttpClient ) { }
 
-  getMockText(): Observable<WordState[]> {
+  public getMockText(): Observable<WordState[]> {
     return new Observable(observer => {
       observer.next('A year ago I was in the audience at a gathering of designers in San Francisco. ' +
       'There were four designers on stage, and two of them worked for me. I was there to support them. ' +
@@ -30,48 +30,49 @@ export class TextService {
     );;
   }
 
-  getSynonym(word: string) {
+  private getSynonym(word: string): Observable<string[]> {
+    const url = `https://api.datamuse.com/words?rel_syn=${word}`;
+    return this.http.get(url).pipe(
+      map((synonyms: Array<any>) => synonyms.map(synonym => synonym.word))
+    );
+  }
+
+  public setSynonyms(word: string): void {
     if (word) {
-      const url = `https://api.datamuse.com/words?rel_syn=${word}`;
-      return this.http.get(url).pipe(
-        map((synonyms: Array<any>) => synonyms.map(synonym => synonym.word))
+      this.getSynonym(word).subscribe(
+        synonyms => this.synonyms$.next(synonyms)
       );
+    } else {
+      this.synonyms$.next([]);
     }
-
-    return of(null);
   }
 
-  setTextState(text: Array<WordState>) {
-    this.text$.next(text);
+  public get synonyms(): Observable<string[]> {
+    return this.synonyms$.asObservable();
   }
 
-  get text() {
-    return this.text$;
+  public setSelectedWord(word: WordState): void {
+    this.selectedWord$.next(word);
   }
 
-  setSynonyms(synonyms: Array<string>) {
-    this.synonyms$.next(synonyms);
-  }
-
-  get synonyms() {
-    return this.synonyms$;
+  public get selectedWord(): Observable<WordState> {
+    return this.selectedWord$.asObservable();
   }
 }
 
 export class WordState {
-  isBold: boolean;
-  isUnderlined: boolean;
-  isItalic: boolean;
+  bold?: boolean;
+  underlined?: boolean;
+  italic?: boolean;
+  color: string;
   isSelected: boolean;
   id: number;
   word: string;
 
   constructor(id, word) {
-    this.isBold = false;
-    this.isUnderlined = false;
-    this.isItalic = false;
     this.isSelected = false;
     this.id = id;
     this.word = word;
+    this.color = '#000000';
   }
 }

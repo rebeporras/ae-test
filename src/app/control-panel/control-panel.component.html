@@ -1,7 +1,8 @@
 <div class="format-actions">
-  <button class="format-action" type="button" (click)="setBold()"><b>B</b></button>
-  <button class="format-action" type="button" (click)="setItalic()"><i>I</i></button>
-  <button class="format-action" type="button" (click)="setUnderlined()"><u>U</u></button>
+  <button class="format-action" type="button" (click)="formatWord('bold')"><b>B</b></button>
+  <button class="format-action" type="button" (click)="formatWord('italic')"><i>I</i></button>
+  <button class="format-action" type="button" (click)="formatWord('underlined')"><u>U</u></button>
+  <input [colorPicker]="color" [style.background]="color" (cpSliderDragEnd)="updateColor($event)"/>
   <select 
     name="synonym" 
     id="synonym"
